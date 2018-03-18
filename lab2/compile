@@ -1,0 +1,4 @@
+#!/bin/bash
+g++ -c lab02.cpp 
+g++ lab02.o -o sfml-app -lsfml-graphics -lsfml-window -lsfml-system
+./sfml-app
