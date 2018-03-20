@@ -4,20 +4,63 @@
 
 sf::Color HSLtoRGB (const float distance, const float angle);
 
-sf::Texture *getHSL();
+class HSL : public Color{
+public:
+    HSL();
+    void getTexture();
+    void display (sf::RenderWindow &window);
+    void update (sf::RenderWindow &window);
+    ~HSL();
+};
 
 
-sf::Texture *getHSL(){
-    sf::Texture * newTexture = new sf::Texture;
-    newTexture->create(2*RADIUS, 2*RADIUS);
+HSL::HSL(): Color() {
+    font.loadFromMemory(font_data, font_data_size);
 
-    sf::Uint8 *newColor = colorArray(HSLtoRGB);
-    newTexture->update(newColor);
-    delete newColor;
+    newColor = new sf::Uint8;
+    texture = new sf::Texture;
+    texture->create(2*RADIUS, 2*RADIUS);
+    getTexture();
 
-    return newTexture;
+    circ.setRadius(RADIUS);
+    circ.setPosition(20, 40);
+    circ.setTexture(texture);
+
+    title = new sf::Text ("HSL", font, 12);
+    title->setOutlineColor(sf::Color::Black);
+    title->setFillColor(sf::Color::Black);
+    title->setPosition(20,40);
+
+    text = new sf::Text ("L= ", font, 12);
+    text->setOutlineColor(sf::Color::Black);
+    text->setFillColor(sf::Color::Black);
+    text->setPosition(200,230);
 }
 
+
+HSL::~HSL(){
+    delete text;
+    delete title;
+    delete texture;
+    delete newColor;
+}
+
+void HSL::getTexture(){
+    newColor = colorArray(HSLtoRGB);
+    texture->update(newColor);
+}
+
+void HSL::update (sf::RenderWindow &window){
+    text->setString("L= " + std::to_string(fromSlider));
+    getTexture();
+    display(window);
+}
+
+void HSL::display (sf::RenderWindow &window) {
+    window.draw(*text);
+    window.draw(*title);
+    window.draw(circ);
+}
 
 sf::Color HSLtoRGB (const float distance, const float angle){
     float d = distance/RADIUS;

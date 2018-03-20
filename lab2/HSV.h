@@ -4,17 +4,65 @@
 
 sf::Color HSVtoRGB (const float distance, const float angle);
 
-sf::Texture *getHSV();
+class HSV : public Color{
+public:
+    HSV();
+    void getTexture();
+    void update (sf::RenderWindow &window);
+    void display (sf::RenderWindow &window);
+    ~HSV();
+};
 
-sf::Texture *getHSV(){
-    sf::Texture * newTexture = new sf::Texture;
-    newTexture->create(2*RADIUS, 2*RADIUS);
 
-    sf::Uint8 *newColor = colorArray(HSVtoRGB);
-    newTexture->update(newColor);
+HSV::HSV(){
+    font.loadFromMemory(font_data, font_data_size);
+
+    newColor = new sf::Uint8;
+    texture = new sf::Texture;
+    texture->create(2*RADIUS, 2*RADIUS);
+    getTexture();
+
+    circ.setRadius(RADIUS);
+    circ.setPosition(320, 40);
+    circ.setTexture(texture);
+
+    title = new sf::Text ("HSV", font, 12);
+    title->setOutlineColor(sf::Color::Black);
+    title->setFillColor(sf::Color::Black);
+    title->setPosition(320,40);
+
+    text = new sf::Text ("V= ", font, 12);
+    text->setOutlineColor(sf::Color::Black);
+    text->setFillColor(sf::Color::Black);
+    text->setPosition(200+300,230+40-40);
+}
+
+HSV::~HSV(){
+    delete text;
+    delete title;
+    delete texture;
     delete newColor;
+}
 
-    return newTexture;
+void HSV::getTexture(){
+    newColor = colorArray(HSVtoRGB);
+    texture->update(newColor);
+}
+
+void::HSV::update (sf::RenderWindow &window){
+    text->setString("V= " + std::to_string(fromSlider));
+    getTexture();
+    display(window);
+}
+
+void HSV::display (sf::RenderWindow &window) {
+    if (changes){
+        text->setString("V= " + std::to_string(fromSlider));
+        getTexture();
+    }
+    window.draw(*text);
+    window.draw(*title);
+    window.draw(circ);
 }
 
 sf::Color HSVtoRGB (const float distance, const float angle){
@@ -35,4 +83,3 @@ sf::Color HSVtoRGB (const float distance, const float angle){
 
     return sf::Color ((r+m)*255, (g+m)*255, (b+m)*255);
 }
-

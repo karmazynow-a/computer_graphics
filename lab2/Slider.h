@@ -5,25 +5,60 @@
 #include "color.h"
 
 
-sf::Uint8 *colorSlider(unsigned x, unsigned y);
-sf::Texture *getSlider(unsigned x, unsigned y);
-void updateMarker (sf:: VertexArray &marker, unsigned y);
+class Slider {
+public:
+    Slider();
+    ~Slider();
+    void getTexture();
+    void display (sf::RenderWindow &window);
+    void updateMarker (unsigned y);
+    void update (sf::RenderWindow &window, unsigned int FPS);
+private:
+    sf::RectangleShape slider;
+    sf::Texture *texture;
+    sf::Text *text;
+    sf::VertexArray marker;
+    sf::Uint8 * color;
+    sf::Font font;
+    unsigned x;
+    unsigned y;
+};
 
 
-sf::Texture *getSlider(unsigned x, unsigned y){
-    sf::Texture * newTexture = new sf::Texture;
-    newTexture->create(x,y);
+Slider::Slider() {
+    x = 40;
+    y = 300;
 
-    sf::Uint8 * color = colorSlider(x,y);
-    newTexture->update(color);
-    delete color;
+    font.loadFromMemory(font_data, font_data_size);
 
-    return newTexture;
+    texture = new sf::Texture;
+    color = new sf::Uint8[2*x*2*y*4];
+    text = new sf::Text ("FPS ", font, 12);
+    texture->create(40,300);
+    getTexture();
+
+    slider = sf::RectangleShape (sf::Vector2f (40,300));
+    slider.setPosition(670,70);
+    slider.setTexture(texture);
+    slider.setOutlineColor(sf::Color::Black);
+    slider.setOutlineThickness(1);
+
+
+    text->setOutlineColor(sf::Color::Black);
+    text->setFillColor(sf::Color::Black);
+    text->setPosition(670, 400);
+
+    marker = sf::VertexArray (sf::Lines, 2);
+    updateMarker(150);
 }
 
+Slider::~Slider() {
+    delete texture;
+    delete color;
+    delete text;
+}
 
-sf::Uint8 *colorSlider(unsigned x, unsigned y){
-    sf::Uint8 * color = new sf::Uint8[2*x*2*y*4];
+void Slider::getTexture(){
 
     for(int i=0; i<x; i++){
         for(int j=0; j<y; j++){
@@ -41,12 +76,24 @@ sf::Uint8 *colorSlider(unsigned x, unsigned y){
             }
         }
     }
-    return color;
+    texture->update(color);
 }
 
-void updateMarker (sf:: VertexArray &marker, unsigned y){
+void Slider::updateMarker (unsigned y){
     marker[0] = sf::Vertex(sf::Vector2f(670 - 10, 70 + y), sf::Color::Black);
     marker[1] = sf::Vertex(sf::Vector2f(670 + 40 + 10, 70 + y), sf::Color::Black);
 
     fromSlider = y/300.0;
+}
+
+void Slider::update (sf::RenderWindow &window, unsigned int FPS){
+    text->setString(std::to_string(FPS) + " FPS");
+    window.draw(*text);
+    window.draw(marker);
+}
+
+void Slider::display (sf::RenderWindow &window){
+    window.draw(*text);
+    window.draw(slider);
+    window.draw(marker);
 }
