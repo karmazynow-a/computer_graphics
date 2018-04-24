@@ -76,7 +76,7 @@ void GUIMyFrame1::Brightness(int value)
     int len = Img_Cpy.GetWidth() * Img_Cpy.GetHeight() * 3; //all pixels * 3 (RGB)
 
     for (int i = 0; i<len; ++i){
-        unsigned int tmp = data[i] + value;
+        int tmp = data[i] + value;
         if (tmp > 255) tmp = 255;
         else if (tmp < 0) tmp = 0;
         data[i] = static_cast<unsigned char> (tmp);
@@ -97,7 +97,7 @@ void GUIMyFrame1::Contrast(int value)
     double contrast = static_cast<double>(value + 100)/(100 - value);
 
     for (int i = 0; i<len; ++i){
-        unsigned int tmp = static_cast<int>((data[i] - 255./2) * contrast + 255./2);
+        int tmp = static_cast<int>((data[i] - 255./2) * contrast + 255./2);
         if (tmp > 255) tmp = 255;
         else if (tmp < 0) tmp = 0;
         data[i] = static_cast<unsigned char> (tmp);
@@ -107,16 +107,92 @@ void GUIMyFrame1::Contrast(int value)
 void GUIMyFrame1::m_b_prewitt_click( wxCommandEvent& event )
 {
  Img_Cpy = Img_Org.Copy();
+  unsigned char *data = Img_Cpy.GetData();
+  int len = Img_Cpy.GetWidth() * Img_Cpy.GetHeight() * 3;
+  int w = Img_Cpy.GetWidth();
+  int h = Img_Cpy.GetHeight();
+  unsigned char *tmp = new unsigned char [len];
+  std::copy(data, data + len, tmp);
 
- for (int i = 1; i<Img_Cpy.GetWidth()-1; ++i)
-    for (int j = 1; j<Img_Cpy.GetHeight()-1; ++j){
+  int R[3][3], G[3][3], B[3][3], Pervitt[3][3];
+
+    Pervitt[0][0] = Pervitt[1][0] = Pervitt[2][0] = -1;
+    Pervitt[0][1] = Pervitt[1][1] = Pervitt[2][1] = 0;
+    Pervitt[0][2] = Pervitt[1][2] = Pervitt[2][2] = 1;
+
+  for (int i = 1; i < w-1; ++i)
+    for (int j = 1; j < h-1; ++j){
+        R[0][0] = tmp[3*((j-1) * w + i - 1)];
+        R[0][1] = tmp[3*((j-1) * w + i)];
+        R[0][2] = tmp[3*((j-1) * w + i + 1)];
+        R[1][0] = tmp[3*((j) * w + i - 1)];
+        R[1][1] = tmp[3*((j) * w + i)];
+        R[1][2] = tmp[3*((j) * w + i + 1)];
+        R[2][0] = tmp[3*((j+1) * w + i - 1)];
+        R[2][1] = tmp[3*((j+1) * w + i)];
+        R[2][2] = tmp[3*((j+1) * w + i + 1)];
+
+        int r =  - (Pervitt[0][0] * R[0][0] + Pervitt[0][1] * R[0][1] + Pervitt[0][2] * R[0][2])
+                    - (Pervitt[1][0] * R[1][0] + Pervitt[1][1] * R[1][1] + Pervitt[1][2] * R[1][2])
+                    - (Pervitt[2][0] * R[2][0] + Pervitt[2][1] * R[2][1] + Pervitt[2][2] * R[2][2]);
+
+        if (r > 255) r = 255;
+        else if (r < 0) r = 0;
+
+        data [3 * (j * w + i)] = static_cast <unsigned char> (r);
+
+        G[0][0] = tmp[3*((j-1) * w + i - 1)+1];
+        G[0][1] = tmp[3*((j-1) * w + i)+1];
+        G[0][2] = tmp[3*((j-1) * w + i + 1)+1];
+        G[1][0] = tmp[3*((j) * w + i - 1)+1];
+        G[1][1] = tmp[3*((j) * w + i)+1];
+        G[1][2] = tmp[3*((j) * w + i + 1)+1];
+        G[2][0] = tmp[3*((j+1) * w + i - 1)+1];
+        G[2][1] = tmp[3*((j+1) * w + i)+1];
+        G[2][2] = tmp[3*((j+1) * w + i + 1)+1];
+
+        int g =  - (Pervitt[0][0] * G[0][0] + Pervitt[0][1] * G[0][1] + Pervitt[0][2] * G[0][2])
+                - (Pervitt[1][0] * G[1][0] + Pervitt[1][1] * G[1][1] + Pervitt[1][2] * G[1][2])
+                - (Pervitt[2][0] * G[2][0] + Pervitt[2][1] * G[2][1] + Pervitt[2][2] * G[2][2]);
+
+        if (g > 255) g = 255;
+        else if (g < 0) g = 0;
+
+        data [3 * (j * w + i)+1] = static_cast<unsigned char> (g);
+
+        B[0][0] = tmp[3*((j-1) * w + i - 1)+2];
+        B[0][1] = tmp[3*((j-1) * w + i)+2];
+        B[0][2] = tmp[3*((j-1) * w + i + 1)+2];
+        B[1][0] = tmp[3*((j) * w + i - 1)+2];
+        B[1][1] = tmp[3*((j) * w + i)+2];
+        B[1][2] = tmp[3*((j) * w + i + 1)+2];
+        B[2][0] = tmp[3*((j+1) * w + i - 1)+2];
+        B[2][1] = tmp[3*((j+1) * w + i)+2];
+        B[2][2] = tmp[3*((j+1) * w + i + 1)+2];
+
+        int b = - (Pervitt[0][0] * B[0][0] + Pervitt[0][1] * B[0][1] + Pervitt[0][2] * B[0][2])
+                    - (Pervitt[1][0] * B[1][0] + Pervitt[1][1] * B[1][1] + Pervitt[1][2] * B[1][2])
+                    - (Pervitt[2][0] * B[2][0] + Pervitt[2][1] * B[2][1] + Pervitt[2][2] * B[2][2]);
+
+        if (b > 255) b = 255;
+        else if (b < 0) b = 0;
+
+        data [3 * (j * w + i)+2] = static_cast<unsigned char> (b);
+
+    }
+    delete[] tmp;
+  }
+/*
+ for (int i = 1; i<Img_Cpy.GetWidth(); ++i)
+    for (int j = 1; j<Img_Cpy.GetHeight(); ++j){
         int tmp = Img_Org.GetRed(i, j) * 3 - Img_Org.GetGreen(i, j) * 2 - Img_Org.GetBlue(i, j);
         if (tmp > 255) tmp = 255;
         else if (tmp < 0) tmp = 0;
 
         Img_Cpy.SetRGB(i, j, tmp, tmp, tmp);
  }
-}
+ */
+
 
 void GUIMyFrame1::m_b_threshold_click( wxCommandEvent& event )
 {
