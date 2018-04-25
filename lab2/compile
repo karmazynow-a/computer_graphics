@@ -1,4 +1,4 @@
 #!/bin/bash
-g++ -c lab02.cpp 
-g++ lab02.o -o sfml-app -lsfml-graphics -lsfml-window -lsfml-system
-./sfml-app
+g++ -c lab02.cpp HSV.cpp color.cpp CMY.cpp HSL.cpp RGB.cpp Slider.cpp
+g++ lab02.o HSV.o color.o CMY.o HSL.o RGB.o Slider.o -o wheels -lsfml-graphics -lsfml-window -lsfml-system
+./wheels
