@@ -1,4 +1,4 @@
 #!/bin/bash
-g++ -c lab01.cpp 
-g++ lab01.o -o sfml-app -lsfml-graphics -lsfml-window -lsfml-system
+g++ -c lab01.cpp menu.cpp 
+g++ lab01.o menu.o -o sfml-app -lsfml-graphics -lsfml-window -lsfml-system
 ./sfml-app
