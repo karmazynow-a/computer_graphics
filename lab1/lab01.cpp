@@ -1,4 +1,4 @@
-#include "menu.cpp"
+#include "menu.h"
 #include <cmath>
 
 int main()
@@ -159,9 +159,6 @@ int main()
                   circ.setPosition(clickPos);
                   circ.setRadius(radius);
                   circ.setOrigin(radius, radius);
-                   //circ.rotate(angle);
-                   //circ.move(sf::Vector2f((radius - radius * sqrt(2)) * cos((angle + 45) * M_1_PI / 180),
-                      //                    (radius - radius * sqrt(2)) * sin((angle + 45) * M_1_PI / 180)));
                   circ.setOutlineColor(drawingColor);
                   circ.setOutlineThickness(1);
                   circ.setFillColor(sf::Color::Transparent);
@@ -172,12 +169,10 @@ int main()
                       mousePressed = false;
                   }
                   break;
-
-              //default:
-                 // break;
           }
 
      }
+
      if(keyPressed){
          switch (key){
              case sf::Keyboard::Escape:
@@ -197,24 +192,11 @@ int main()
                  sf::Sprite sprite = menu.updateTexture ("image.jpg", texture);
                  shapes.push_back(new sf::Sprite (sprite));
                  break;
-
-                 //default:
-                 //   break;
          }
      }
 
-     //std::cout<< "yes" <<std::endl;
-
-
      window.draw(menu);
      window.display();
-/*
-     if(mouseReleased){
-         image = menu.image();
-         image.saveToFile("background.jpg");
-         menu.updateTexture("background.jpg");
-     }
-*/
  }
     freeShapes(shapes);
   return 0;

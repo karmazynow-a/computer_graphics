@@ -14,10 +14,10 @@ int main() {
     unsigned int FPS = 0, frame_counter = 0;
 
 
-    fromSlider = 0.5;
+    Color::fromSlider = 0.5;
     sf::Vector2f clickPos;
     sf::Font font;
-    font.loadFromMemory(font_data, font_data_size);
+    font.loadFromFile("arial.ttf");
 
     HSL hsl;
     HSV hsv;
@@ -40,7 +40,7 @@ int main() {
             if (event.type == sf::Event::Closed) window.close();
             if (event.key.code == sf::Keyboard::Escape) window.close();
             if (event.type == sf::Event::MouseButtonPressed){
-                changes = true;
+                Color::changes = true;
                 clickPos.x = event.mouseButton.x;
                 clickPos.y = event.mouseButton.y;
                 if (clickPos.x > 670 && clickPos.x < 710 && clickPos.y > 70 && clickPos.y < 370){
@@ -48,14 +48,15 @@ int main() {
                 }
             }
         }
-        if (changes){
-            slider.update(window, FPS);
+        if (Color::changes){
             hsl.update(window);
             hsv.update(window);
             rgb.update(window);
             cmy.update(window);
-            changes = false;
+            Color::changes = false;
         }
+
+        slider.update(window, FPS);
 
         if (clock.getElapsedTime().asSeconds() >= 1.0f) {
             FPS = (unsigned int) ((float) frame_counter / clock.getElapsedTime().asSeconds());
