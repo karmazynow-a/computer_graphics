@@ -7,3 +7,4 @@ lab3 - basic wxWidgets app, displaying text, images, moving vectors <br />
 lab4 - 2D function transformation using wxWidgets <br />
 lab5 - 3D graphics geometric transformations using wxWidgets <br />
 lab6 - raster graphics operations using wxWidgets <br />
+lab7 - map drawing using wxWidgets <br />
